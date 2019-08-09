@@ -1,0 +1,20 @@
+
+Website: https://www.facebook.com/login/device-based/regular/login/
+User/email: email@live.ca
+Password: b'password'
+
+Website: https://myschedule.sfu.ca/login.jsp
+User/email: alik604
+Password: b'password'
+
+Website: https://www.investopedia.com/accounts/login.aspx
+User/email: email@gmail.com
+Password: b'password'
+
+Website: https://www.ratemyprofessors.com/j_spring_security_check
+User/email: email@gmail.com
+Password: b'password'
+
+Website: https://portal.aws.amazon.com/billing/signup
+User/email: alik604
+Password: b'password'
