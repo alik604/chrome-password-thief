@@ -1,8 +1,7 @@
 # Chrome Password Thieve
-> ...
->
-> ...
+>chromePasswordThieve is an easy to develop program that is so elementary, that it evades anti virus
 
+you can read the [writeup here](https://alik604.github.io/chromePasswordThieve/index.html)
 
 
  ## Contributing
