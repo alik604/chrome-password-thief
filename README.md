@@ -1,13 +1,12 @@
-# Chrome Password Thieve
+# [Chrome Password Thieve](https://alik604.github.io/chromePasswordThieve/index.html)
 >chromePasswordThieve is an easy to develop program that is so elementary, that it evades anti virus
 
-you can read the [writeup here](https://alik604.github.io/chromePasswordThieve/index.html)
+
+## You can read the [writeup here](https://alik604.github.io/chromePasswordThieve/index.html)
 
 
  ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
-
-
 
 
 ## License
