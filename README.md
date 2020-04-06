@@ -5,11 +5,31 @@
 ## You can read the [writeup here](https://alik604.github.io/chromePasswordThieve/index.html)
 
 
+
+## Usage
+
+```python
+edit in the 'to' and 'from' emails and passwords
+python chromepasswordthieve.py
+
+```
+Tested on the same computer, will need your PC hostname and/or IP addr  
+
  ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 
+## Inspiration 
++ Mr. robot
++ Social engineering attacks. Assuming python is install (or you convert this to a .exe), you should be able to email yourself chrome passwords, by only pluging in a U3-type usb (or CD) which has autorun. 
+
+## Expansion  
+
+* Make headless 
+* convert to a exe, not all computers have python install... very few do.
+
 ## License
+
 [The Unlicense](<https://choosealicense.com/licenses/unlicense/>)
 
 ```text
