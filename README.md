@@ -9,7 +9,7 @@
 ## Usage
 
 ```python
-edit in the 'to' and 'from' emails and passwords
+# edit-in the 'to' and 'from' emails and passwords
 python chromepasswordthieve.py
 
 ```
