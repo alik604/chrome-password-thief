@@ -1,9 +1,8 @@
-# [Chrome Password Thieve](https://alik604.github.io/chromePasswordThieve/index.html)
->chromePasswordThieve is an easy to develop program that is so elementary, that it evades anti virus
+# [Chrome Password Thief](https://alik604.github.io/chrome-password-thief/Docs/index.html)
+>Chrome Password Thief is an easy to develop program that is so elementary, that it evades anti virus
 
 
-## You can read the [writeup here](https://alik604.github.io/chromePasswordThieve/index.html)
-
+## You can read the [writeup here](https://alik604.github.io/chrome-password-thief/Docs/index.html)
 
 
 ## Usage
@@ -13,11 +12,9 @@
 python chromepasswordthieve.py
 
 ```
-Tested on the same computer, will need your PC hostname and/or IP addr  
 
  ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
-
 
 ## Inspiration 
 + Mr. robot
