@@ -1,5 +1,5 @@
 # [Chrome Password Thief](https://alik604.github.io/chrome-password-thief/Docs/index.html)
->Chrome Password Thief is an easy to develop program that is so elementary, that it evades anti virus
+>Chrome Password Thief is an easy to develop program that is so elementary, that it evades anti virus! 
 
 
 ## You can read the [writeup here](https://alik604.github.io/chrome-password-thief/Docs/index.html)
